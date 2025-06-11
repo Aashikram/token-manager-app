@@ -1,0 +1,286 @@
+.dashboard-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  background: linear-gradient(145deg, #f8f9fa, #ffffff);
+}
+
+.dashboard-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.dashboard-heading {
+  font-size: 2.5rem;
+  color: #ff9800;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.trophy-icon {
+  color: #ffd700;
+  font-size: 2.2rem;
+}
+
+.subheading {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.leaderboards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.leaderboard-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.section-header {
+  padding: 1.5rem;
+  background: linear-gradient(90deg, #fff7ae 0%, #ffb347 60%, #ff9800 100%);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 1rem;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #d6241f;
+  white-space: nowrap;
+}
+
+.section-icon {
+  font-size: 1.3rem;
+  color: #d6241f;
+  flex-shrink: 0;
+}
+
+.total-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: #d6241f;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.leaderboard-container {
+  height: 400px;
+  overflow: hidden;
+  position: relative;
+}
+
+.leaderboard-box {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: #d6241f #f0f0f0;
+}
+
+.leaderboard-box::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard-box::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.leaderboard-box::-webkit-scrollbar-thumb {
+  background: #d6241f;
+  border-radius: 4px;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.leaderboard-entry:hover {
+  transform: translateX(5px);
+}
+
+.rank-tag {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.rank-number {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.medal-icon {
+  font-size: 1.5rem;
+}
+
+.medal-icon.gold { color: #ffd700; }
+.medal-icon.silver { color: #c0c0c0; }
+.medal-icon.bronze { color: #cd7f32; }
+
+.leaderboard-details {
+  flex-grow: 1;
+}
+
+.leaderboard-details strong {
+  display: block;
+  color: #2c3e50;
+  margin-bottom: 0.2rem;
+}
+
+.team-name {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.points {
+  font-weight: bold;
+  color: #ff9800;
+  font-size: 1.2rem;
+}
+
+.points span {
+  font-size: 0.8rem;
+  color: #666;
+  margin-left: 0.2rem;
+}
+
+.stats-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.stat-box {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+}
+
+.stat-content {
+  flex-grow: 1;
+}
+
+.stat-box p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.stat-box strong {
+  display: block;
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-top: 0.5rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  opacity: 0.2;
+}
+
+.stat-box.violet .stat-icon { color: #ffb347; }
+.stat-box.green .stat-icon { color: #ff9800; }
+.stat-box.orange .stat-icon { color: #ffcc33; }
+
+.loading-spinner {
+  text-align: center;
+  padding: 2rem;
+  color: #1a73e8;
+  font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    padding: 1rem;
+  }
+
+  .dashboard-heading {
+    font-size: 2rem;
+  }
+
+  .leaderboards {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-container {
+    height: 300px;
+  }
+
+  .section-header {
+    padding: 1rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .total-count {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.6rem;
+  }
+
+  .stats-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-box {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header {
+    padding: 0.8rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .total-count {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+  }
+}

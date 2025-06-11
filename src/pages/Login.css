@@ -1,0 +1,174 @@
+/* Full screen body */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Full screen flex container */
+.login-page {
+  display: flex;
+  justify-content: center; /* center horizontally */
+  align-items: center;     /* center vertically */
+  height: 100%;
+  width: 100vw;
+  background-color: #f0f0f0; /* light background */
+}
+
+/* Content box */
+.login-content {
+  display: flex;
+  flex-direction: row;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Left logo */
+.login-image {
+  background-color: #fff;
+  padding: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-image img {
+  max-width: 220px;
+  height: auto;
+}
+
+/* Right form box */
+.login-form-box {
+  padding: 50px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+}
+
+.login-form-box h2 {
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Form group with icon */
+.form-group {
+  margin-bottom: 25px;
+  position: relative; /* for icon placement */
+}
+
+/* Icon style */
+.form-group .input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #FFA500; /* yellow-orange */
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/* Modern underline-only inputs */
+.form-group input {
+  width: 100%;
+  padding: 10px 5px 10px 35px; /* left padding for icon */
+  border: none;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  color: #000000; /* black typed text */
+}
+
+.form-group input::placeholder {
+  color: #888888; /* medium gray placeholder */
+  opacity: 1;
+}
+
+/* Select styling */
+.form-group select {
+  width: 100%;
+  padding: 10px 5px 10px 35px; /* left padding for icon */
+  border: none;
+  border-bottom: 2px solid #ccc;
+  background-color: transparent;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+  color: #888888; /* medium gray initial text */
+  appearance: none; /* remove default arrow in some browsers */
+}
+
+.form-group select:focus {
+  border-bottom-color: #d6241f;
+}
+
+.form-group select option {
+  color: #000000; /* black dropdown options */
+}
+
+/* Fancy button */
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #d6241f;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 10px;
+}
+
+.submit-button:hover {
+  background-color: #a91c17;
+  transform: translateY(-2px);
+  box-shadow: 0px 6px 15px rgba(169, 28, 23, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-content {
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+  }
+
+  .login-image {
+    padding: 20px;
+  }
+
+  .login-form-box {
+    padding: 30px 20px;
+  }
+}
+
+.login-container {
+  background: linear-gradient(90deg, #fff7ae 0%, #ffb347 60%, #ff9800 100%);
+}
+
+.login-form button, .login-form .submit-btn {
+  background: linear-gradient(90deg, #fff7ae 0%, #ffb347 60%, #ff9800 100%);
+  color: #fff;
+}
+
+.login-form button:hover, .login-form .submit-btn:hover {
+  background: #ff9800;
+  color: #fff;
+}
+
+.error-message {
+  border: 1.5px solid #ff9800;
+  background: #fff3e0;
+  color: #ff9800;
+}
