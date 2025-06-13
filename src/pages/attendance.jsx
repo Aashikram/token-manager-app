@@ -8,10 +8,34 @@ import {
   where,
   writeBatch,
   Timestamp,
+  setDoc
 } from "firebase/firestore";
 import { db } from "../firebase";
 import "./attendance.css";
-import { FaCheckCircle, FaExclamationCircle } from "react-icons/fa";
+import { FaCheckCircle, FaExclamationCircle, FaUserCheck, FaUserTimes } from "react-icons/fa";
+
+// Add this utility function
+const resetAttendanceAtMidnight = async () => {
+  const today = new Date().toDateString();
+  const lastResetDate = localStorage.getItem("lastResetDate");
+
+  if (lastResetDate !== today) {
+    try {
+      const attendanceQuery = query(collection(db, "attendance"));
+      const querySnapshot = await getDocs(attendanceQuery);
+      const batch = writeBatch(db);
+
+      querySnapshot.forEach((doc) => {
+        batch.update(doc.ref, { status: false });
+      });
+
+      await batch.commit();
+      localStorage.setItem("lastResetDate", today);
+    } catch (error) {
+      console.error("Error resetting attendance:", error);
+    }
+  }
+};
 
 export default function Attendance() {
   const navigate = useNavigate();
@@ -19,7 +43,7 @@ export default function Attendance() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [presentCount, setPresentCount] = useState(0);
 
   const user = {
     name: localStorage.getItem("name"),
@@ -28,77 +52,87 @@ export default function Attendance() {
     role: localStorage.getItem("role"),
   };
 
-  // Fetch team members
-  useEffect(() => {
-    const fetchTeamMembers = async () => {
-      try {
-        const q = query(
-          collection(db, "users"),
-          where("team", "==", user.team)
-        );
-        const querySnapshot = await getDocs(q);
-        const members = [];
-        querySnapshot.forEach((doc) => {
-          members.push({ id: doc.id, ...doc.data() });
-        });
-        setTeamMembers(members);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching team members:", error);
-        setError("Failed to load team members");
-        setLoading(false);
-      }
-    };
+  const fetchTeamMembers = async () => {
+    try {
+      // 1. Get all users in the captain's team
+      const usersQuery = query(
+        collection(db, "users"),
+        where("team", "==", user.team)
+      );
+      const usersSnapshot = await getDocs(usersQuery);
+      const teamEmpCodes = usersSnapshot.docs.map(doc => doc.data().emp_code);
+      
+      // 2. Get attendance records for these users
+      const attendanceQuery = query(
+        collection(db, "attendance"),
+        where("emp_code", "in", teamEmpCodes)
+      );
+      const attendanceSnapshot = await getDocs(attendanceQuery);
+      
+      // 3. Filter and count
+      const members = [];
+      let present = 0;
+      
+      usersSnapshot.forEach((userDoc) => {
+        const userData = userDoc.data();
+        const attendanceDoc = attendanceSnapshot.docs.find(doc => doc.data().emp_code === userData.emp_code);
+        
+        if (attendanceDoc?.data()?.status === true) {
+          present++;
+        } else if (!attendanceDoc || attendanceDoc.data().status === false) {
+          members.push({ 
+            id: userDoc.id, 
+            ...userData 
+          });
+        }
+      });
+      
+      setTeamMembers(members);
+      setPresentCount(present);
+    } catch (error) {
+      setError("Failed to load team members");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (user.role === "captain") {
+      resetAttendanceAtMidnight();
       fetchTeamMembers();
     } else {
       navigate("/dashboard");
     }
-  }, [user.role, user.team, navigate]);
+  }, [user.role, user.team]);
 
-  const handleSelectMember = (memberId) => {
-    setSelectedMembers((prev) =>
-      prev.includes(memberId)
-        ? prev.filter((id) => id !== memberId)
-        : [...prev, memberId]
-    );
-  };
-
-  const handleMarkAttendance = async () => {
-    if (selectedMembers.length === 0) {
-      setError("Please select at least one team member");
-      return;
-    }
-
+  const handleMarkAttendance = async (memberId) => {
     try {
       setLoading(true);
-      const batch = writeBatch(db);
+      const member = teamMembers.find((m) => m.id === memberId);
+      
+      const attendanceRef = doc(db, "attendance", member.emp_code);
+      await setDoc(attendanceRef, {
+        emp_code: member.emp_code,
+        name: member.name,
+        team: member.team,
+        status: true,
+        timestamp: Timestamp.now(),
+        marked_by: user.emp_code,
+      }, { merge: true });
 
-      selectedMembers.forEach((memberId) => {
-        const member = teamMembers.find((m) => m.id === memberId);
-        const attendanceRef = doc(db, "attendance", memberId);
-        batch.set(attendanceRef, {
-          emp_code: memberId,
-          name: member.name,
-          team: member.team,
-          status: true,
-          timestamp: Timestamp.now(),
-          marked_by: user.emp_code,
-        });
-      });
-
-      await batch.commit();
+      setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+      setPresentCount(prev => prev + 1);
       setSuccess(true);
-      setSelectedMembers([]);
-      setError("");
-      setLoading(false);
     } catch (error) {
-      console.error("Error marking attendance:", error);
       setError("Failed to mark attendance");
+      console.error(error);
+    } finally {
       setLoading(false);
     }
   };
+
+  const absentCount = teamMembers.length;
 
   if (loading) {
     return (
@@ -123,32 +157,44 @@ export default function Attendance() {
         {success && (
           <div className="success-message">
             <FaCheckCircle className="success-icon" />
-            <span>Attendance marked successfully for {selectedMembers.length} members!</span>
+            <span>Attendance marked successfully!</span>
           </div>
         )}
 
-        <div className="team-members-list">
-          <h3>Team: {user.team}</h3>
+        <div className="status-cards">
+          <div className="status-card present">
+            <FaUserCheck className="status-icon" />
+            <span>Present: {presentCount}</span>
+          </div>
+          <div className="status-card absent">
+            <FaUserTimes className="status-icon" />
+            <span>Absent: {absentCount}</span>
+          </div>
+        </div>
+
+        <div className="table-container">
           <table className="members-table">
             <thead>
               <tr>
-                <th>Select</th>
                 <th>Name</th>
                 <th>Employee Code</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {teamMembers.map((member) => (
                 <tr key={member.id}>
-                  <td>
-                    <input
-                      type="checkbox"
-                      checked={selectedMembers.includes(member.id)}
-                      onChange={() => handleSelectMember(member.id)}
-                    />
-                  </td>
                   <td>{member.name}</td>
                   <td>{member.emp_code}</td>
+                  <td>
+                    <button 
+                      onClick={() => handleMarkAttendance(member.id)}
+                      disabled={loading}
+                      className="mark-button"
+                    >
+                      {loading ? "Processing..." : "Mark Attendance"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -156,13 +202,12 @@ export default function Attendance() {
         </div>
 
         <div className="attendance-actions">
-          <button
-            onClick={handleMarkAttendance}
-            disabled={selectedMembers.length === 0 || loading}
+          <button 
+            onClick={() => navigate("/dashboard")}
+            className="back-button"
           >
-            {loading ? "Processing..." : "Mark Attendance for Selected"}
+            Back to Dashboard
           </button>
-          <button onClick={() => navigate("/dashboard")}>Back to Dashboard</button>
         </div>
       </div>
     </div>

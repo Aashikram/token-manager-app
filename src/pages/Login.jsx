@@ -84,6 +84,7 @@ function Login({ onLogin }) {
         localStorage.setItem("emp_code", empCode);
         localStorage.setItem("name", user.name);
         localStorage.setItem("team", user.team);
+        localStorage.setItem("role", user.role);
         if (onLogin) onLogin();
         navigate("/dashboard", { replace: true });
       } catch (storageError) {

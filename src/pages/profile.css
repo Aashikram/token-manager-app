@@ -278,3 +278,30 @@ body {
     color: #d6241f !important;
   }
 }
+
+/* Add this to your existing profile.css */
+.profile-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.profile-container::-webkit-scrollbar-track {
+  background: rgba(255, 179, 71, 0.1); /* Light orange track */
+  border-radius: 10px;
+}
+
+.profile-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #ff9800 0%, #d6241f 100%); /* Orange to red gradient */
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #ff8c00 0%, #c21e1a 100%); /* Darker gradient on hover */
+}
+
+/* Firefox support */
+.profile-container {
+  scrollbar-width: thin;
+  scrollbar-color: #ff9800 rgba(255, 179, 71, 0.1);
+}

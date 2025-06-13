@@ -108,4 +108,104 @@
 .success-icon,
 .info-icon {
   font-size: 1.2rem;
+}
+
+/* Status Cards */
+.status-cards {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+.status-card {
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.present {
+  background-color: #e6f7ee;
+  color: #28a745;
+  border-left: 4px solid #28a745;
+}
+
+.absent {
+  background-color: #fde8e8;
+  color: #dc3545;
+  border-left: 4px solid #dc3545;
+}
+
+.status-icon {
+  font-size: 1.3rem;
+}
+
+/* Table Improvements */
+.table-container {
+  max-height: 60vh;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.members-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.members-table th {
+  position: sticky;
+  top: 0;
+  background: #f8f9fa;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.members-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.members-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Button Styles */
+.mark-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mark-button:hover {
+  background-color: #218838;
+}
+
+.mark-button:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.back-button {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background-color: #e2e6ea;
 } 

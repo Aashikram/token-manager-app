@@ -6,6 +6,8 @@ import {
   getDocs,
   query,
   where,
+  doc,
+  setDoc,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
@@ -90,6 +92,17 @@ function SignUp() {
         token_left: 100,
         token_spent: 0,
         games_played: 0
+      });
+
+      // Create attendance record
+      const attendanceRef = doc(db, "attendance", empCode);
+      await setDoc(attendanceRef, {
+        emp_code: empCode,
+        name: name,
+        team: team,
+        status: false,
+        marked_by: "",
+        timestamp: null
       });
 
       setSuccess("Sign up successful! You can now log in.");
