@@ -14,29 +14,6 @@ import { db } from "../firebase";
 import "./attendance.css";
 import { FaCheckCircle, FaExclamationCircle, FaUserCheck, FaUserTimes } from "react-icons/fa";
 
-// Add this utility function
-const resetAttendanceAtMidnight = async () => {
-  const today = new Date().toDateString();
-  const lastResetDate = localStorage.getItem("lastResetDate");
-
-  if (lastResetDate !== today) {
-    try {
-      const attendanceQuery = query(collection(db, "attendance"));
-      const querySnapshot = await getDocs(attendanceQuery);
-      const batch = writeBatch(db);
-
-      querySnapshot.forEach((doc) => {
-        batch.update(doc.ref, { status: false });
-      });
-
-      await batch.commit();
-      localStorage.setItem("lastResetDate", today);
-    } catch (error) {
-      console.error("Error resetting attendance:", error);
-    }
-  }
-};
-
 export default function Attendance() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -99,7 +76,6 @@ export default function Attendance() {
 
   useEffect(() => {
     if (user.role === "captain") {
-      resetAttendanceAtMidnight();
       fetchTeamMembers();
     } else {
       navigate("/dashboard");
