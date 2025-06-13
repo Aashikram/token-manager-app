@@ -5,6 +5,7 @@ import "./DashboardLayout.css";
 const DashboardLayout = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = localStorage.getItem("role");
 
   const handleLogout = () => {
     try {
@@ -13,6 +14,7 @@ const DashboardLayout = ({ onLogout }) => {
       localStorage.removeItem("emp_code");
       localStorage.removeItem("name");
       localStorage.removeItem("team");
+      localStorage.removeItem("role");
       
       // Clear any other app state
       sessionStorage.clear();
@@ -58,12 +60,14 @@ const DashboardLayout = ({ onLogout }) => {
             >
               Profile
             </Link>
-            <Link
-              to="/dashboard/attendance"
-              className={`nav-link${location.pathname === "/dashboard/attendance" ? " active" : ""}`}
-            >
-              Attendance
-            </Link>
+            {userRole === "captain" && (
+              <Link
+                to="/dashboard/attendance"
+                className={`nav-link${location.pathname === "/dashboard/attendance" ? " active" : ""}`}
+              >
+                Attendance
+              </Link>
+            )}
           </div>
         </div>
         <button
