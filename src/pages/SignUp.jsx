@@ -79,7 +79,7 @@ function SignUp() {
         name,
         password, // For production, hash this!
         team,
-        role: "user",
+        role: ["129196", "129182", "129184", "996519", "134348", "128238", "135816", "136024", "996521", "996511", "996518", "134414", "996476", "134400"].includes(empCode) ? "captain" : "user",
         tokens: 100,
       });
 
