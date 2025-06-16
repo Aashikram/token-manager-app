@@ -1,11 +1,10 @@
 import "./dashboard.css";
 import { useState, useEffect } from "react";
 import { FaTrophy, FaUsers, FaUserAlt, FaMedal } from "react-icons/fa";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase"; // Adjust this path if needed
 
 function LeaderboardCard({ rank, name, points, team, type }) {
-  const rankIcons = ["🥇", "🥈", "🥉"];
   const colorClasses = ["gold", "silver", "bronze"];
 
   return (
@@ -33,32 +32,48 @@ export default function Dashboard() {
   const [individualLeaderboard, setIndividualLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch team leaderboard
+  const isAdmin = localStorage.getItem("role") === "admin";
+
+  // TEAM leaderboard (real-time if admin)
   useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        const teamsRef = collection(db, "teams");
-        const snapshot = await getDocs(teamsRef);
+    const teamsRef = collection(db, "teams");
+
+    if (isAdmin) {
+      const unsubscribe = onSnapshot(teamsRef, (snapshot) => {
         const teamsArray = snapshot.docs.map((doc) => ({
           team: doc.id,
           points: doc.data().Points || 0,
         }));
         teamsArray.sort((a, b) => b.points - a.points);
         setTeamLeaderboard(teamsArray);
-      } catch (error) {
-        console.error("Error fetching team leaderboard:", error);
-      }
-    };
+      });
 
-    fetchTeamData();
-  }, []);
+      return () => unsubscribe();
+    } else {
+      const fetchTeamData = async () => {
+        try {
+          const snapshot = await getDocs(teamsRef);
+          const teamsArray = snapshot.docs.map((doc) => ({
+            team: doc.id,
+            points: doc.data().Points || 0,
+          }));
+          teamsArray.sort((a, b) => b.points - a.points);
+          setTeamLeaderboard(teamsArray);
+        } catch (error) {
+          console.error("Error fetching team leaderboard:", error);
+        }
+      };
 
-  // Fetch individual leaderboard
+      fetchTeamData();
+    }
+  }, [isAdmin]);
+
+  // INDIVIDUAL leaderboard (real-time if admin)
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const tokenTrackerRef = collection(db, "token_tracker");
-        const snapshot = await getDocs(tokenTrackerRef);
+    const tokenTrackerRef = collection(db, "token_tracker");
+
+    if (isAdmin) {
+      const unsubscribe = onSnapshot(tokenTrackerRef, (snapshot) => {
         const usersArray = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -70,13 +85,32 @@ export default function Dashboard() {
         usersArray.sort((a, b) => b.points - a.points);
         setIndividualLeaderboard(usersArray);
         setIsLoading(false);
-      } catch (error) {
-        console.error("Error fetching individual leaderboard:", error);
-      }
-    };
+      });
 
-    fetchUserData();
-  }, []);
+      return () => unsubscribe();
+    } else {
+      const fetchUserData = async () => {
+        try {
+          const snapshot = await getDocs(tokenTrackerRef);
+          const usersArray = snapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              name: data.name,
+              team: data.team_number,
+              points: data.token_spent || 0,
+            };
+          });
+          usersArray.sort((a, b) => b.points - a.points);
+          setIndividualLeaderboard(usersArray);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching individual leaderboard:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [isAdmin]);
 
   if (isLoading) {
     return (
@@ -93,7 +127,9 @@ export default function Dashboard() {
           <FaTrophy className="trophy-icon" />
           Aarohan Scoreboard
         </h1>
-        <p className="subheading">Track your team's performance and individual achievements</p>
+        <p className="subheading">
+          Track your team's performance and individual achievements
+        </p>
       </div>
 
       <div className="leaderboards">

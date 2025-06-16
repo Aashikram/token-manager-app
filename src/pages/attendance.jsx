@@ -75,7 +75,7 @@ export default function Attendance() {
   };
 
   useEffect(() => {
-    if (user.role === "captain") {
+    if (user.role === "captain" || user.role === "admin") {
       fetchTeamMembers();
     } else {
       navigate("/dashboard");

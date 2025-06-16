@@ -60,7 +60,7 @@ const DashboardLayout = ({ onLogout }) => {
             >
               Profile
             </Link>
-            {userRole === "captain" && (
+            {(userRole === "captain" || userRole === "admin") && (
               <Link
                 to="/dashboard/attendance"
                 className={`nav-link${location.pathname === "/dashboard/attendance" ? " active" : ""}`}
