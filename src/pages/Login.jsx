@@ -18,6 +18,7 @@ function Login({ onLogin }) {
   const [empCode, setEmpCode] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   // Check storage availability
@@ -46,19 +47,23 @@ function Login({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear any previous errors
+    setIsLoading(true);
 
     if (!checkStorageAvailability()) {
       setError("Local storage is disabled. Please enable it to use this application.");
+      setIsLoading(false);
       return;
     }
 
     // Basic validation
     if (!/^\d{6}$/.test(empCode)) {
       setError("Employee code must be exactly 6 digits.");
+      setIsLoading(false);
       return;
     }
     if (!password.trim()) {
       setError("Password cannot be empty.");
+      setIsLoading(false);
       return;
     }
 
@@ -69,12 +74,14 @@ function Login({ onLogin }) {
 
       if (snapshot.empty) {
         setError("Employee code not found. Please sign up.");
+        setIsLoading(false);
         return;
       }
 
       const user = snapshot.docs[0].data();
       if (user.password !== password) {
         setError("Incorrect password. Please try again.");
+        setIsLoading(false);
         return;
       }
 
@@ -90,10 +97,12 @@ function Login({ onLogin }) {
       } catch (storageError) {
         console.error("Storage error:", storageError);
         setError("Failed to save login information. Please check your browser settings.");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Login error:", error);
       setError("Something went wrong. Please try again.");
+      setIsLoading(false);
     }
   };
 
@@ -139,7 +148,13 @@ function Login({ onLogin }) {
                 required
               />
             </div>
-            <button type="submit" className="submit-button">Login</button>
+            <button type="submit" className="submit-button" disabled={isLoading}>
+              {isLoading ? (
+                <div className="spinner"></div>
+              ) : (
+                "Login"
+              )}
+            </button>
           </form>
           <div style={{ marginTop: "1rem", textAlign: "center" }}>
             Don't have an account?{" "}

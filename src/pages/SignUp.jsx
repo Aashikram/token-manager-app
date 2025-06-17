@@ -11,7 +11,7 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
-import { FaIdBadge, FaUser, FaUsers, FaLock, FaExclamationCircle } from "react-icons/fa";
+import { FaIdBadge, FaUser, FaUsers, FaLock, FaExclamationCircle, FaSpinner } from "react-icons/fa";
 
 const teams = ["Team 1", "Team 2", "Team 3", "Team 4", "Team 5", "Team 6", "Team 7"];
 
@@ -22,6 +22,7 @@ function SignUp() {
   const [team, setTeam] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   // Check storage availability
@@ -39,27 +40,33 @@ function SignUp() {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setLoading(true);
 
     if (!checkStorageAvailability()) {
       setError("Local storage is disabled. Please enable it to use this application.");
+      setLoading(false);
       return;
     }
 
     // Validation
     if (!/^\d{6}$/.test(empCode)) {
       setError("Employee code must be exactly 6 digits.");
+      setLoading(false);
       return;
     }
     if (!name.trim()) {
       setError("Name cannot be empty.");
+      setLoading(false);
       return;
     }
     if (!password.trim()) {
       setError("Password cannot be empty.");
+      setLoading(false);
       return;
     }
     if (!teams.includes(team)) {
       setError("Please select a valid team.");
+      setLoading(false);
       return;
     }
 
@@ -70,6 +77,7 @@ function SignUp() {
 
       if (!snapshot.empty) {
         setError("This employee code is already registered.");
+        setLoading(false);
         return;
       }
 
@@ -110,6 +118,8 @@ function SignUp() {
     } catch (error) {
       console.error("Sign up error:", error);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -191,7 +201,15 @@ function SignUp() {
                 ))}
               </select>
             </div>
-            <button type="submit" className="submit-button">Sign Up</button>
+            <button type="submit" className="submit-button" disabled={loading}>
+              {loading ? (
+                <div className="spinner">
+                  <FaSpinner className="spinner-icon" />
+                </div>
+              ) : (
+                "Sign Up"
+              )}
+            </button>
           </form>
           <div style={{ marginTop: "1rem", textAlign: "center" }}>
             Already have an account?{" "}
